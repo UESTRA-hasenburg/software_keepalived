@@ -1,20 +1,20 @@
 ---
 galaxy_info:
   author: "Christian Hasenburg"
-  description: your role description
-  company: ÜSTRA Hannoversche Verkehrsbetriebe AG
+  description: "install and configure keepalived"
+  company: "ÜSTRA Hannoversche Verkehrsbetriebe AG"
 
-  role_name: "software_keepalive"
+  role_name: "software_keepalived"
+  namespace: "uestra"
   license: "MIT"
 
   min_ansible_version: "2.9"
 
-#  platforms:
-#    - name: "Debian"
-#    versions:
-#      - all
+  platforms:
+    - name: "Debian"
+      versions:
+        - all
 
   galaxy_tags: []
-
 dependencies:
   - role: global_handlers

@@ -1,11 +1,13 @@
 ---
 # defaults file for software_keepalive
 
-# Set these variables in host_vars/...
+# Folder for nftables rules
+software_keepalived_nftables_rules_folder: /etc/nftables.d
 
-keepalive_vrrp_id: id
-keepalive_vrrp_name: name
-keepalive_vrrp_partner: ipaddress
-keepalive_vrrp_priority: priority
-keepalive_vrrp_virtual_ip: ipaddress/subnetshortnotation
-keepalive_vrrp_password: password
+# List of VRRP instances
+software_keepalived_vrrp_instances:
+  - name: "{{ software_keepalived_vrrp_name | default('VI_1') }}"
+    id: "{{ software_keepalived_vrrp_id }}"
+    priority: "{{ software_keepalived_vrrp_priority | default(100) }}"
+    state: "{{ software_keepalived_vrrp_state | default('BACKUP') }}"
+    virtual_ip: "{{ software_keepalived_vrrp_virtual_ip }}"
