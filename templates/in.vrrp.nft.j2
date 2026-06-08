@@ -1,0 +1,8 @@
+#
+# nftables Regel
+# 
+# Wird mittels include-Befehl geladen in /etc/nftables.conf. Weitere Informationen dort.
+# 
+
+# Erlaube eingehenden vrrp Verkehr vom Partner
+ip protocol vrrp ip saddr {{ keepalive_vrrp_partner }} accept

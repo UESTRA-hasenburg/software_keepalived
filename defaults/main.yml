@@ -1,0 +1,11 @@
+---
+# defaults file for software_keepalive
+
+# Set these variables in host_vars/...
+
+keepalive_vrrp_id: id
+keepalive_vrrp_name: name
+keepalive_vrrp_partner: ipaddress
+keepalive_vrrp_priority: priority
+keepalive_vrrp_virtual_ip: ipaddress/subnetshortnotation
+keepalive_vrrp_password: password

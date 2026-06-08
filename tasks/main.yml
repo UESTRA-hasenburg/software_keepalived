@@ -1,0 +1,63 @@
+---
+# tasks file for software_keepalive
+
+- name: Install keepalived
+  ansible.builtin.apt:
+    state: present
+    force_apt_get: true
+    install_recommends: false
+    name:
+      - keepalived
+
+- name: Set keepalived configuration
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+  notify: restart keepalived
+
+- name: Make sure keepalived is started and enabled
+  ansible.builtin.service:
+    name: keepalived.service
+    state: started
+    enabled: true
+
+- name: Allow incoming vrrp traffic from partner
+  ansible.builtin.template:
+    src: in.vrrp.nft.j2
+    dest: "{{ nftables_rules_folder }}/in.vrrp.nft"
+    owner: root
+    group: root
+    mode: "u=rw"
+  notify: check and restart nftables # imported through global_handlers role
+
+- name: Allow outgoing vrrp traffic to multicast
+  ansible.builtin.copy:
+    src: out.vrrp.nft
+    dest: "{{ nftables_rules_folder }}/out.vrrp.nft"
+    owner: root
+    group: root
+    mode: "u=rw"
+  notify: check and restart nftables # imported through global_handlers role
+
+
+# checkmk vrrp fix
+
+- name: Copy keepalived_notify script
+  ansible.builtin.copy:
+    src: keepalived_notify
+    dest: /etc/keepalived/keepalived_notify
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o=rx"
+  notify: restart keepalived
+
+- name: Copy keepalived checkmk plugin script
+  ansible.builtin.copy:
+    src: keepalived
+    dest: /usr/lib/check_mk_agent/local/keepalived
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o=rx"

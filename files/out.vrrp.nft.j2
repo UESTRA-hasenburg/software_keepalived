@@ -1,0 +1,8 @@
+#
+# nftables Regel
+# 
+# Wird mittels include-Befehl geladen in /etc/nftables.conf. Weitere Informationen dort.
+# 
+
+# Erlaube ausgehenden vrrp Multicast Verkehr
+ip protocol vrrp ip daddr 224.0.0.18 accept

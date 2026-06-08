@@ -1,0 +1,7 @@
+---
+# handlers file for software_keepalive
+
+- name: Restart keepalived
+  ansible.builtin.service:
+    name: keepalived.service
+    state: restarted
