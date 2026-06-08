@@ -1,6 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/env python3
 
-# (c) Harald Weidner, 2021-07-21
+# (c) Christian Hasenburg, 2026-06-08
 # License: MIT
 #
 # Checkmk local check for keepalived monitoring
@@ -11,24 +11,43 @@
 # example output:
 # 0 Keepalived_VRRP_VI_1 - VRRP instance VI_1 is in state BACKUP.
 
-use strict;
-use warnings;
+import glob
+import os
 
-for my $file (</var/run/keepalived.*.*.state>) {
-    open(IN, $file) || next;
-    while(<IN>) {
-	chomp;
-	my ($type, $name, $state) = split(":", $_);
-	next if($type ne "INSTANCE");
+def main():
+    # Suche nach Statusdateien von keepalived
+    state_files = glob.glob('/var/run/keepalived.*.*.state')
 
-	my $st;
-	if($state =~ m/^(MASTER|BACKUP)$/)  { $st = 0; }
-	elsif($state eq "FAULT")            { $st = 2; }
-	else                                { $st = 3; }
+    for file_path in state_files:
+        try:
+            with open(file_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
 
-	print "$st Keepalived_VRRP_$name - VRRP instance $name is in state $state.\n";
-    }
-    close(IN);
-}
+                    # Zeilenformat: TYPE:NAME:STATE
+                    parts = line.split(':')
+                    if len(parts) < 3:
+                        continue
 
-exit 0;
+                    vrrp_type, name, state = parts[0], parts[1], parts[2]
+
+                    if vrrp_type != "INSTANCE":
+                        continue
+
+                    # Status bestimmen
+                    # 0 = OK, 2 = CRIT, 3 = UNKNOWN
+                    if state in ["MASTER", "BACKUP"]:
+                        status_code = 0
+                    elif state == "FAULT":
+                        status_code = 2
+                    else:
+                        status_code = 3
+
+                    print(f"{status_code} Keepalived_VRRP_{name} - VRRP instance {name} is in state {state}.")
+        except (IOError, OSError):
+            continue
+
+if __name__ == "__main__":
+    main()

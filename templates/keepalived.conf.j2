@@ -1,14 +1,14 @@
-{% if keepalive_vrrp_instances is defined %}
-{% for instance in keepalive_vrrp_instances %}
+{% if software_keepalived_vrrp_instances is defined %}
+{% for instance in software_keepalived_vrrp_instances %}
 vrrp_instance {{ instance.name }} {
     notify /etc/keepalived/keepalived_notify
     interface {{ ansible_facts.default_ipv4.interface }}
-        state {instance.state}
-        priority {{ instance.priority }}
+    state {{ instance.state | default('BACKUP') }}
+    priority {{ instance.priority }}
 
-        virtual_router_id {{ instance.id }}
+    virtual_router_id {{ instance.id }}
 
-        virtual_ipaddress {instan
+    virtual_ipaddress {
 {% if instance.virtual_ip is string %}
             {{ instance.virtual_ip }}
 {% else %}
@@ -17,6 +17,6 @@ vrrp_instance {{ instance.name }} {
 {% endfor %}
 {% endif %}
         }
-} 
+}
 {% endfor %}
 {% endif %}

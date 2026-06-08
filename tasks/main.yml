@@ -16,6 +16,7 @@
     owner: root
     group: root
     mode: "u=rw,g=r,o=r"
+    validate: keepalived -t -f %s
   notify: restart keepalived
 
 - name: Make sure keepalived is started and enabled
@@ -27,21 +28,20 @@
 - name: Allow incoming vrrp traffic from partner
   ansible.builtin.template:
     src: in.vrrp.nft.j2
-    dest: "{{ nftables_rules_folder }}/in.vrrp.nft"
+    dest: "{{ software_keepalived_nftables_rules_folder }}/in.vrrp.nft"
     owner: root
     group: root
-    mode: "u=rw"
+    mode: "u=rw,g=,o="
   notify: check and restart nftables # imported through global_handlers role
 
 - name: Allow outgoing vrrp traffic to multicast
-  ansible.builtin.copy:
-    src: out.vrrp.nft
-    dest: "{{ nftables_rules_folder }}/out.vrrp.nft"
+  ansible.builtin.template:
+    src: out.vrrp.nft.j2
+    dest: "{{ software_keepalived_nftables_rules_folder }}/out.vrrp.nft"
     owner: root
     group: root
-    mode: "u=rw"
+    mode: "u=rw,g=,o="
   notify: check and restart nftables # imported through global_handlers role
-
 
 # checkmk vrrp fix
 
